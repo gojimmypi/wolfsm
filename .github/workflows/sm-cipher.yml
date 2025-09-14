@@ -74,6 +74,8 @@ jobs:
 
           echo "GITHUB_ENV=$GITHUB_ENV"
 
+          git status
+
           echo "contents..."
           # typically "/home/runner/work/wolfssl/wolfssl" contains wolfssl source
           pwd
