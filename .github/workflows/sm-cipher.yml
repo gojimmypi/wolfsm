@@ -111,8 +111,19 @@ jobs:
             # TODO Begin omit
             echo "git checkout espressif-latest-debug"
 
+            git branch -a --list '*espressif-latest-debug*'
+            git status -sb
+
+            # write the remote-tracking ref for that branch into origin/*
             git fetch --depth 1 origin refs/heads/espressif-latest-debug:refs/remotes/origin/espressif-latest-debug
-            git switch -c espressif-latest-debug --track origin/espressif-latest-debug
+
+            # create a local branch from it (sets upstream on most setups)
+            git checkout -b espressif-latest-debug origin/espressif-latest-debug
+
+
+            git branch -a --list '*espressif-latest-debug*'
+            git status -sb
+
             # TODO End
 
 
