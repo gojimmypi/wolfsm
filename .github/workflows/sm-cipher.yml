@@ -110,7 +110,8 @@ jobs:
 
             # TODO Begin omit
             echo "git checkout espressif-latest-debug"
-            git checkout espressif-latest-debug
+            git fetch --depth 1 origin espressif-latest-debug
+            git checkout -b espressif-latest-debug --track origin/espressif-latest-debug
             # TODO End
 
             echo "Contents of this path for wolfssl = $(pwd)"
