@@ -107,6 +107,12 @@ jobs:
             git   clone --depth 1 https://github.com/$REPO_OWNER/wolfssl.git wolfssl
 
             cd ./wolfssl
+
+            # TODO Begin omit
+            echo "git checkout espressif-latest-debug"
+            git checkout espressif-latest-debug
+            # TODO End
+
             echo "Contents of this path for wolfssl = $(pwd)"
             ls
           popd
