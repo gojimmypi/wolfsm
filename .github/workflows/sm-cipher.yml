@@ -176,10 +176,19 @@ jobs:
           make
           # Done with compile wolfssl
 
+      - name: Compile wolfssl
+        run: |
+          # make check
+
+          cd "$WOLFSSL_ROOT"
+          echo "Current directory:           $PWD"
+
+          make check
+
       - name: Test SM wolfcrypt
         shell: bash
         run: |
-          # Run client / server tests from cloned wolfssl directory
+          # Run wolfcrypt tests from cloned wolfssl directory
 
           cd "$WOLFSSL_ROOT"
           echo "Current directory:           $PWD"
@@ -191,7 +200,7 @@ jobs:
       - name: Run SM benchmark
         shell: bash
         run: |
-          # Run client / server tests from cloned wolfssl directory
+          # Run benchmark from cloned wolfssl directory
 
           cd "$WOLFSSL_ROOT"
           echo "Current directory:           $PWD"
