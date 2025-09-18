@@ -23,17 +23,13 @@ on:
     branches: [ '**', 'master', 'main', 'release/**' ]
     paths:
       - '.github/workflows/sm-cipher.yml'
-      - 'src/**'
-      - 'wolfcrypt/**'
-      - 'wolfssl/**'
+      - './**'
   pull_request:
     # Run after merge on protected branches
     branches: [ "main", "master", "release/**" ]
     paths:
       - '.github/workflows/sm-cipher.yml'
-      - 'src/**'
-      - 'wolfcrypt/**'
-      - 'wolfssl/**'
+      - './**'
   workflow_dispatch:
 
 concurrency:
@@ -43,8 +39,7 @@ concurrency:
 
 jobs:
   build:
-    # TODO:
-    # if: github.repository_owner == 'wolfssl'
+    if: github.repository_owner == 'wolfssl'
     runs-on: ubuntu-latest
     env:
       REPO_OWNER: ${{ github.repository_owner }}
@@ -165,17 +160,18 @@ jobs:
 
           make check
 
-      - name: Test SM wolfcrypt
-        shell: bash
+      - name: Unit test
         run: |
-          # Run wolfcrypt tests from cloned wolfssl directory
+          # Run unit.test ./tests/test-sm2.conf
 
           cd "$WOLFSSL_ROOT"
           echo "Current directory:           $PWD"
 
-          set -euo pipefail
+          echo "looking for test-sm2.conf"
+          ls ./tests/test-sm2.conf
 
-          ./wolfcrypt/test/testwolfcrypt
+          echo "Run unit test: ./tests/unit.test ./tests/test-sm2.conf"
+          ./tests/unit.test ./tests/test-sm2.conf
 
       - name: Run SM benchmark
         shell: bash
@@ -189,93 +185,4 @@ jobs:
 
           ./wolfcrypt/benchmark/benchmark
 
-      - name: Test SM client/server (TLS 1.2 and 1.3)
-        shell: bash
-        run: |
-          # Run client / server tests from cloned wolfssl directory
 
-          cd "$WOLFSSL_ROOT"
-          echo "Current directory:           $PWD"
-
-          set -euo pipefail
-
-          # Parameterized cases
-          cases=(
-            "-v 3 -l ECDHE-ECDSA-SM4-CBC-SM3"
-            "-v 3 -l ECDHE-ECDSA-SM4-GCM-SM3"
-            "-v 3 -l ECDHE-ECDSA-SM4-CCM-SM3"
-            "-v 4 -l TLS13-SM4-GCM-SM3"
-            "-v 4 -l TLS13-SM4-CCM-SM3"
-          )
-
-          srv_bin=./examples/server/server
-          cli_bin=./examples/client/client
-
-          srv_cert=./certs/sm2/server-sm2.pem
-          srv_key=./certs/sm2/server-sm2-priv.pem
-          cli_cert=./certs/sm2/client-sm2.pem
-          cli_key=./certs/sm2/client-sm2-priv.pem
-          ca_root=./certs/sm2/root-sm2.pem
-
-          # Use an explicit port so we can start/stop cleanly
-          port=11111
-
-          # Ensure background server is cleaned up even on failure
-          cleanup() { pkill -P $$ >/dev/null 2>&1 || true; }
-          trap cleanup EXIT
-
-          for args in "${cases[@]}"; do
-            echo "=== Testing ${args} on port ${port} ==="
-
-            # Start server in background; capture PID
-            "${srv_bin}" ${args} \
-              -c "${srv_cert}" -k "${srv_key}" \
-              -A "${cli_cert}" -V \
-              -p "${port}" &
-            srv_pid=$!
-
-            # Wait briefly for the server to listen
-            if command -v ss >/dev/null 2>&1; then
-              for _ in {1..40}; do
-                ss -ltn | grep -q ":${port} " && break
-                echo "Waiting for server on port ${port} ..."
-                sleep 0.25
-              done
-            else
-              sleep 2
-            fi
-
-            # Run client with timeout so CI does not hang
-            set +e
-            timeout 60s "${cli_bin}" ${args}       \
-                        -h 127.0.0.1 -p "${port}"  \
-                        -c "${cli_cert}"           \
-                        -k "${cli_key}"            \
-                        -A "${ca_root}" -C
-            rc=$?
-            set -e
-
-            # Graceful shutdown: only kill if still running; keep quiet
-            if kill -0 "${srv_pid}" >/dev/null 2>&1; then
-              kill "${srv_pid}" # >/dev/null 2>&1 || true
-            fi
-            wait "${srv_pid}"   # >/dev/null 2>&1 || true
-
-            if [ ${rc} -ne 0 ]; then
-              echo "Client failed for: ${args} (rc=${rc})"
-              exit ${rc}
-            fi
-          done
-
-      - name: Unit test
-        run: |
-          # Run unit.test ./tests/test-sm2.conf
-
-          cd "$WOLFSSL_ROOT"
-          echo "Current directory:           $PWD"
-
-          echo "looking for test-sm2.conf"
-          ls ./tests/test-sm2.conf
-
-          echo "Run unit test: ./tests/unit.test ./tests/test-sm2.conf"
-          ./tests/unit.test ./tests/test-sm2.conf

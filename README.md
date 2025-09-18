@@ -97,7 +97,7 @@ For C and assembly code: --enable-sp --enable-sp-asm
 
 Optimised C code is available for 32 and 64 bit CPUs.
 
-Assmembly code is available for the following platforms:
+Assembly code is available for the following platforms:
 * Intel x64
 * Aarch64
 * ARM 32-bit
@@ -126,6 +126,19 @@ the algorithm/s:
   * SM4-CBC: -sm4-cbc
   * SM4-GCM: -sm4-gcm
   * SM4-CCM: -sm4-ccm
+
+To manually run the wolfcrypt tests:
+
+```
+./wolfcrypt/test/testwolfcrypt
+```
+
+See the SM-cipher specifics included:
+
+```
+SM-3     test passed!
+SM-4     test passed!
+```
 
 ## Testing TLS
 
