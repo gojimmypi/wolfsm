@@ -313,10 +313,15 @@ jobs:
           fi
 
           mkdir -p ./certs
-          cp -a "$WOLFSSL_ROOT"/certs     ./certs/
+          cp -a "$WOLFSSL_ROOT/certs/."       ./certs/
 
           mkdir -p ./testsuite
-          cp -a "$WOLFSSL_ROOT"/testsuite ./testsuite/
+          cp -a "$WOLFSSL_ROOT/testsuite/."  ./testsuite/
+
+          ls
+          ls certs
+          ls testsuite
+
 
           ./testsuite/testsuite.test
 
