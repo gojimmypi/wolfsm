@@ -6,5 +6,4 @@
 
 # Backup files
 *.bak
-/certs
-/testsuite
+
