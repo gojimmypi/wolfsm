@@ -176,7 +176,7 @@ jobs:
           make
           # Done with compile wolfssl
 
-      - name: Compile wolfssl
+      - name: make check
         run: |
           # make check
 
@@ -286,3 +286,37 @@ jobs:
               exit ${rc}
             fi
           done
+
+      - name: Run testsuite.test
+        shell: bash
+        run: |
+          # Run test suite
+
+          pushd "$WOLFSSL_ROOT"
+            make distclean
+            ./autogen.sh
+            ./configure --enable-tls13 --enable-sm2 --enable-sm3 --enable-sm4-gcm --enable-sm4-ccm   # note: no --enable-crl/--enable-crl-monitor
+            make -j
+          popd
+
+          # Setup essentials
+          if [ -f "$WOLFSSL_ROOT/input" ]; then
+            cp -f "$WOLFSSL_ROOT/input" ./input
+          else
+            printf 'hello wolfSSL\n' > ./input
+          fi
+
+          if [ -f "$WOLFSSL_ROOT/quit" ]; then
+            cp -f "$WOLFSSL_ROOT/quit" ./quit
+          else
+            printf 'quit\n' > ./quit
+          fi
+
+          mkdir -p ./certs
+          cp -a "$WOLFSSL_ROOT"/certs     ./certs/
+
+          mkdir -p ./testsuite
+          cp -a "$WOLFSSL_ROOT"/testsuite ./testsuite/
+
+          ./testsuite/testsuite.test
+
