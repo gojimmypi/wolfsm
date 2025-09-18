@@ -75,6 +75,7 @@ jobs:
           # typically "/home/runner/work/wolfssl/wolfssl" contains wolfssl source
           pwd
           ls
+          # ** END ** Set job environment variables
 
       - name: Get wolfssl
         run: |
@@ -137,7 +138,7 @@ jobs:
           pwd
           ls
 
-          # Done with install wolfssl
+          # ** END ** Install wolfsm
 
       - name: Compile wolfssl
         run: |
@@ -149,7 +150,8 @@ jobs:
           ./autogen.sh
           ./configure --enable-sm3 --enable-sm4-ecb --enable-sm4-cbc --enable-sm4-ctr --enable-sm4-gcm --enable-sm4-ccm --enable-sm2
           make
-          # Done with compile wolfssl
+
+          # ** END ** Compile wolfssl
 
       - name: make check
         run: |
@@ -159,6 +161,8 @@ jobs:
           echo "Current directory:           $PWD"
 
           make check
+
+          # ** END ** make check
 
       - name: Unit test
         run: |
@@ -173,6 +177,8 @@ jobs:
           echo "Run unit test: ./tests/unit.test ./tests/test-sm2.conf"
           ./tests/unit.test ./tests/test-sm2.conf
 
+          # ** END ** Unit test
+
       - name: Run SM benchmark
         shell: bash
         run: |
@@ -185,4 +191,4 @@ jobs:
 
           ./wolfcrypt/benchmark/benchmark
 
-
+          # ** END ** un SM benchmark
